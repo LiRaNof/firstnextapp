@@ -1,101 +1,169 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Input } from "../../components/ui/input";
+import { MdDelete } from "react-icons/md";
+import { DateTime } from "luxon";
+import { Ri24HoursFill } from "react-icons/ri";
+
+import { v4 as uuid } from "uuid";
+import { FaRegThumbsUp } from "react-icons/fa";
+import { FaRegThumbsDown } from "react-icons/fa";
+
+import Data from "../../components/interface/data"
+import Link from 'next/link'
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    const now = DateTime.local();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    const [input, setInput] = useState("");
+    const [todos, setTodos] = useState<Data[]>([]);
+
+
+    const changetodos = (index: number, data: Data) => {
+        const temp: Data[] = [...todos];
+        setTodos(temp.toSpliced(index, 1, data));
+    }
+
+    return (
+
+        <div className="bg-gray-100 flex justify-center items-center min-h-screen">
+            <Card className="w-[600px]">
+                <CardHeader>
+                    <CardTitle>TODO App</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ul>
+                        {todos.map((data, index) => {
+                            if (data.due < now) return (
+                                <li key={uuid()} className="bg-white p-2 mt-2 flex">
+                                    <input onBlur={(e) => {
+                                        const newdata: Data = { todo: e.target.value, due: data.due, rank: data.rank }
+                                        changetodos(index, newdata)
+                                    }}
+                                        defaultValue={data.todo}
+                                    ></input>
+                                    <label className="duelabel">{data.due.toLocaleString()}</label>
+                                    <label className="rank">rank:{data.rank}</label>
+
+                                    <button
+                                        className="ml-2"
+                                        onClick={() => {
+                                            setTodos(todos.filter((_, i) => i !== index));
+                                        }}
+                                    >
+                                        <MdDelete color="red" />
+                                    </button>
+                                    <button
+                                        className="ml-3"
+                                        onClick={() => {
+                                            let newrank = data.rank;
+                                            if (newrank < 6) {
+                                                newrank = newrank + 1;
+                                            }
+                                            changetodos(
+                                                index,
+                                                {
+                                                    todo: data.todo,
+                                                    due: now.plus({ day: newrank * 2 }),
+                                                    rank: newrank
+                                                })
+
+                                        }}
+                                    >
+                                        <FaRegThumbsUp color="black" />
+                                    </button>
+                                    <button
+                                        className="ml-3"
+                                        onClick={() => {
+                                            let newrank = data.rank;
+                                            if (newrank > 0) {
+                                                newrank = newrank - 1;
+                                            }
+
+                                            changetodos(index, { todo: data.todo, due: now.plus({ day: newrank * 2 }), rank: newrank })
+
+                                        }}
+                                    >
+                                        <FaRegThumbsDown color="red" />
+                                    </button>
+                                </li>
+                            );
+                        })}
+
+                    </ul>
+
+                    <Input
+                        placeholder="タスクを追加"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                    />
+                    {/* <div>{todo}</div> */}
+                    <Button
+                        className="w-full mt-2"
+                        onClick={() => {
+                            if (!(input == "")) {
+                                const newdata: Data = { todo: input, due: now, rank: 0 };
+                                setTodos([...todos, newdata]);
+                                setInput("")
+                            }
+                        }}
+                    >
+                        追加
+                    </Button>
+                    <ul>
+                        {todos.map((data, index) => (
+                            <li key={uuid()} className="bg-white p-2 mt-2 flex">
+                                <input onBlur={(e) => {
+                                    const newdata: Data = { todo: e.target.value, due: data.due, rank: data.rank }
+                                    changetodos(index, newdata)
+                                }}
+                                    defaultValue={data.todo}
+                                ></input>
+                                <label className="duelabel">{data.due.toLocaleString()}</label>
+                                <label className="rank">rank:{data.rank}</label>
+
+                                <button
+                                    className="ml-2"
+                                    onClick={() => {
+                                        setTodos(todos.filter((_, i) => i !== index));
+                                    }}
+                                >
+                                    <MdDelete color="red" />
+                                </button>
+                                <button
+                                    className="ml-3"
+                                    onClick={() => {
+
+                                        changetodos(index, { todo: data.todo, due: data.due.plus({ day: 1 }), rank: data.rank })
+
+                                    }}
+                                >
+                                    <Ri24HoursFill color="black" />
+                                </button>
+                                <button
+                                    className="ml-3"
+                                    onClick={() => {
+
+                                        changetodos(index, { todo: data.todo, due: data.due.minus({ day: 1 }), rank: data.rank })
+
+                                    }}
+                                >
+                                    <Ri24HoursFill color="red" />
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                    <div>                        
+                        <Link href="/exam">テスト</Link>
+                    </div>
+
+                </CardContent>
+            </Card>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+
+    );
+
 }
