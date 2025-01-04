@@ -21,7 +21,7 @@ export async function DELETE(
     context: { params: { id: string } }
   ) {
     // params を非同期で解決
-    const { id } = context.params;  // awaitを使ってparamsを取得
+    const { id } = await context.params;  // awaitを使ってparamsを取得
   
     const todoId = Number(id); // 数値に変換
     const updateData = await request.json(); // リクエストボディ全体を取得

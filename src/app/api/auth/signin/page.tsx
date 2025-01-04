@@ -1,7 +1,7 @@
 import {
     LoginButton,
     LogoutButton,
-} from "./loginbutton";
+} from "../../../../components/ui/loginbutton";
 
 export default async function Home() {
 
