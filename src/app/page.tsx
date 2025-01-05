@@ -1,6 +1,5 @@
-"use client";
 
-
+import { auth } from "@/auth";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Input } from "../components/ui/input";
@@ -17,7 +16,8 @@ import Link from 'next/link'
 import { Todo } from '@prisma/client'
 import { useEffect, useState } from 'react'
 
-export default function Home() {
+export default  function Home() {
+  
   const now = DateTime.local();
   const [inputValue, setInputValue] = useState<string>("")
 
