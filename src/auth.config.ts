@@ -4,9 +4,7 @@ import { NextRequest } from "next/server";
 import Google from "next-auth/providers/google";
 export const authConfig = {
     providers: [ Google,],
-  pages: {
-    signIn: "signin",
-  },
+
   callbacks: {
     // Middlewareでユーザーの認証を行うときに呼び出される
     // NextResponseを返すことでリダイレクトやエラーを返すことができる
