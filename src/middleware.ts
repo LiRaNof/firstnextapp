@@ -4,5 +4,5 @@ import { auth } from "@/auth";
 export default auth;
 export const config = {
     
-    matcher: ["/((?!api).*)"], // ?!で否定です。
+    matcher: ["/((?!api|signin|favicon.ico).*)"],
 };

@@ -5,7 +5,7 @@ import {signIn, signOut} from "next-auth/react";
 // ログインボタン
 export const LoginButton = () => {
     return (
-        <button style={{marginRight: 10}} onClick={() => signIn("google")}>
+        <button style={{marginRight: 10}} onClick={() => signIn()}>
             Sign in
         </button>
     );
