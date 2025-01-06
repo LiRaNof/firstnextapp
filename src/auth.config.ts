@@ -5,10 +5,12 @@ export const authConfig: NextAuthConfig = {
  providers: [
        Google, // たったこれだけ
  ],
- pages: {
-  signIn: "/signin",
-},
+ 
  callbacks: {
+  authorized: async ({ auth }) => {
+    // Logged in users are authenticated, otherwise redirect to login page
+    return !!auth
+  },
   async jwt({ token, user, account }) {
     if (user && account?.id_token) {
       token.idToken = account?.id_token;
