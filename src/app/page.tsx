@@ -7,7 +7,7 @@ import { MdDelete } from "react-icons/md";
 import { DateTime } from "luxon";
 import { Ri24HoursFill } from "react-icons/ri";
 
-import { v4 as uuid } from "uuid";
+
 import { FaRegThumbsUp } from "react-icons/fa";
 import { FaRegThumbsDown } from "react-icons/fa";
 
